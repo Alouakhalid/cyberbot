@@ -12,10 +12,29 @@ except Exception:
 JWT_ALGORITHM      = "HS256"
 TOKEN_EXPIRY_HOURS = 24
 
-
 def _hash_password(plain_password: str) -> str:
     salt = bcrypt.gensalt(rounds=12)
     return bcrypt.hashpw(plain_password.encode(), salt).decode()
+
+def init_admin_user():
+    try:
+        import streamlit as st
+        admin_usr = st.secrets.get("ADMIN_USERNAME", "admin")
+        admin_pwd = st.secrets.get("ADMIN_PASSWORD", "Ali&8122004")
+    except Exception:
+        admin_usr = os.getenv("ADMIN_USERNAME", "admin")
+        admin_pwd = os.getenv("ADMIN_PASSWORD", "Ali&8122004")
+        
+    try:
+        with get_cursor() as cur:
+            cur.execute("SELECT id FROM users WHERE username = ?", (admin_usr,))
+            if not cur.fetchone():
+                cur.execute(
+                    "INSERT INTO users (username, email, password_hash, role) VALUES (?, ?, ?, ?)",
+                    (admin_usr, f"{admin_usr}@admin.local", _hash_password(admin_pwd), "admin"),
+                )
+    except Exception as e:
+        print(f"Failed to init admin user: {e}")
 
 
 def _verify_password(plain_password: str, hashed: str) -> bool:
