@@ -9,7 +9,7 @@ except Exception:
 
 client = OpenAI(
     base_url="https://api.groq.com/openai/v1",
-    api_key=_api_key,
+    api_key=_api_key or "dummy_key_to_prevent_import_crash",
 )
 
 MODEL = "llama-3.3-70b-versatile"
