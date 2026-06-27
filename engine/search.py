@@ -7,7 +7,7 @@ try:
 except Exception:
     _api_key = os.getenv("TAVILY_API_KEY", "")
 
-tavily_client = TavilyClient(api_key=_api_key)
+tavily_client = TavilyClient(api_key=_api_key or "dummy_key_to_prevent_import_crash")
 
 CYBER_DOMAINS = [
     "cve.mitre.org", "nvd.nist.gov", "exploit-db.com",
